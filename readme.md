@@ -21,6 +21,8 @@ if [ "$(date +%A)" == "Monday" ] && [ "$(date +%H)" -ge "6" ] && [ "$(date +%H)"
     git push --tags
 fi
 
+```
+
 This script uses curl command to make a REST call to Jira and retrieve the status of the board, and stores the response in a file jira_board_status.json. Then it uses git command to commit the file jira_board_status.json to the git repository and push it to the remote. Finally, it uses if statement with date command to check if the current day is Monday, and the hour is between 6 and 7 am, if so, it creates a tag with the current date in format YYYY-MM-DD and pushes it to the remote repository.
 
 You will need to replace the values of JIRA_USERNAME, JIRA_API_TOKEN, BOARD_ID, https://your_jira_url with your own information.
