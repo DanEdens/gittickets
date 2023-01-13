@@ -1,0 +1,26 @@
+6-7 * * 1"
+
+jobs:
+  update-jira-board-status:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    - name: Pull Jira Board Status
+      run: |
+        curl --user "${{ secrets.JIRA_USERNAME }}:${{ secrets.JIRA_API_TOKEN }}" -X GET "https://your_jira_url/rest/agile/1.0/board/${{ secrets.BOARD_ID }}/issue?fields=status" > jira_board_status.json
+      
+    - name: Commit to git
+      run: |
+        git config --global user.email "you@example.com"
+        git config --global user.name "Your Name"
+        git add jira_board_status.json
+        git commit -m "Update Jira board status"
+        git push "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ secrets.OWNER }}/${{ secrets.REPO }}.git" HEAD:${{ secrets.BRANCH }}
+      
+    - name: Create custom Tag
+      run: |
+        git tag $(date +\%Y-\%m-\%d)
+        git push "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ secrets.OWNER }}/${{ secrets.REPO }}.git" --tags
