@@ -21,9 +21,9 @@ jq . jira_board_status.json > jira_board_status_prettified.json
 git add jira_board_status_prettified.json
 
 # Get the list of changed files
-CHANGED_FILES=`git diff --name-only HEAD`
-
+#CHANGED_FILES=`git diff --name-only HEAD`
+CHANGED_FILES=`date +%Y-%m-%d-%H:00`
 # Commit with the list of changed files in the message
-git commit -m "Update Jira board status. $(date +%Y-%m-%d)"
+git commit -m "Update Jira board status. $CHANGED_FILES"
 git push -u origin master
 
