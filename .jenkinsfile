@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+    environment {
+        JIRA_USERNAME = "your_username"
+        JIRA_API_TOKEN = "your_api_token"
+        BOARD_ID = "your_board_id"
+        GIT_REPO_URL = "https://your_git_repo.git"
+    }
+    stages {
+        stage('Pull Jira Board Status') {
+            steps {
+                sh '''
+                curl --user "$JIRA_USERNAME:$JIRA_API_TOKEN" -X GET "https://your_jira_url/rest/agile/1.0/board/$BOARD_ID/issue?fields=status" > jira_board_status.json
+                '''
+            }
+        }
+        stage('Commit to git') {
+            steps {
+                git branch: 'master', url: "${GIT_REPO_URL}"
+                sh '''
+                git add jira_board_status.json
+                git commit -m "Update Jira board status"
+                git push
+                '''
+            }
+        }
+        stage('Create Tag') {
+            when {
+                expression {
+                  return (currentBuild.currentResult == 'SUCCESS') && (new Date().format("EEEE") == "Monday") && (new Date().format("HH:mm") == "6:00")
+                }
+            }
+            steps {
+                sh '''
+                git tag $(date +\%Y-\%m-\%d)
+                git push --tags
+                '''
+            }
+        }
+    }
+}
+
